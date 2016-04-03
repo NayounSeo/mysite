@@ -13,7 +13,7 @@ public class JoinFormAction implements Action {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("Join Form Action execute");
 		WebUtil.forward(request, response, "/WEB-INF/views/user/joinform.jsp");
 	}
-
 }

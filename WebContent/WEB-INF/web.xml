@@ -10,3 +10,7 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
 </web-app>
+<!--  이 web.xml은 톰캣에게 이것이..? 무슨 일을 하는지 알려주는 디스크립터이다! -->
+<!--  1. 서블릿 매핑 -->
+<!--  2. 필터 등록 -->
+<!--  3. 리스너 등록 -->

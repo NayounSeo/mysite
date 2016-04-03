@@ -1,4 +1,10 @@
+<%@page import="com.estsoft.mysite.vo.GuestBookVo"%>
+<%@page import="java.util.List"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
+
+<%
+		List<GuestBookVo> list = (List<GuestBookVo>)request.getAttribute("list");
+%>
 <!doctype html>
 <html>
 <head>
@@ -7,28 +13,19 @@
 <link href="/mysite/assets/css/guestbook.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<div id="container">
-		<div id="header">
-			<h1>MySite</h1>
-			<ul>
-				<li><a href="">로그인</a><li>
-				<li><a href="">회원가입</a><li>
-				<li><a href="">회원정보수정</a><li>
-				<li><a href="">로그아웃</a><li>
-				<li>님 안녕하세요 ^^;</li>
-			</ul>
-		</div>
+	<div id="container">	
+		<jsp:include page="/WEB-INF/views/include/header.jsp"/>	
 		<div id="content">
 			<div id="guestbook">
-				<form action="/mysite/guestbook" method="post">
+				<form action="/mysite/guest" method="post">
 					<input type="hidden" name="a" value="insert">
 					<table>
 						<tr>
 							<td>이름</td><td><input type="text" name="name"></td>
-							<td>비밀번호</td><td><input type="password" name="pass"></td>
+							<td>비밀번호</td><td><input type="password" name="password"></td>
 						</tr>
 						<tr>
-							<td colspan=4><textarea name="content" id="content"></textarea></td>
+							<td colspan=4><textarea name="message" id="content"></textarea></td>
 						</tr>
 						<tr>
 							<td colspan=4 align=right><input type="submit" VALUE=" 확인 "></td>
@@ -37,35 +34,34 @@
 				</form>
 				<ul>
 					<li>
+					<%
+							int count=list.size();
+							for( GuestBookVo vo : list) {
+					%>
 						<table>
 							<tr>
-								<td>[4]</td>
-								<td>안대혁</td>
-								<td>2015-11-10 11:22:30</td>
-								<td><a href="">삭제</a></td>
+								<td>[<%=count%>]</td>
+								<td><%=vo.getName()%></td>
+								<td><%=vo.getRegDate() %></td>
+								<td><a href="/mysite/guest?a=deleteform&no=<%=vo.getNo()%>">삭제</a></td>
 							</tr>
 							<tr>
 								<td colspan=4>
-								안녕하세요. ^^;<br>
-								하하하하	
+								<%=vo.getMessage().replaceAll("\r\n", "<br>") %>				
 								</td>
 							</tr>
 						</table>
+						<%
+							count--;
+							}
+						%>
 						<br>
 					</li>
 				</ul>
 			</div>
 		</div>
-		<div id="navigation">
-			<ul>
-				<li><a href="">안대혁</a></li>
-				<li><a href="">방명록</a></li>
-				<li><a href="">게시판</a></li>
-			</ul>
-		</div>
-		<div id="footer">
-			<p>(c)opyright 2016 </p>
-		</div>
+		<jsp:include page="/WEB-INF/views/include/navigation.jsp"/>
+		<jsp:include page="/WEB-INF/views/include/footer.jsp"/>	
 	</div>
 </body>
 </html>

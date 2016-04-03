@@ -13,6 +13,7 @@ public class DefaultAction implements Action {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("Default Action execute");
 		WebUtil.redirect( request, response, "/mysite/main" );
 	}
 

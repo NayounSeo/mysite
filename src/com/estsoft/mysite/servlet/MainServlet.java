@@ -21,12 +21,12 @@ public class MainServlet extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			request.setCharacterEncoding( "UTF-8" );
-			
-			String actionName = request.getParameter( "a" );
-			ActionFactory actionFactory = new MainActionFactory();
-			Action action = actionFactory.getAction( actionName );
-			
-			action.execute(request, response);
+		request.setCharacterEncoding( "UTF-8" );
+		
+		String actionName = request.getParameter( "a" );
+		ActionFactory actionFactory = new MainActionFactory();
+		Action action = actionFactory.getAction( actionName );
+		
+		action.execute(request, response);
 	}
 }

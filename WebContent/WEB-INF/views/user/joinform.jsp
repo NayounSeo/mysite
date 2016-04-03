@@ -7,21 +7,13 @@
 <link href="/mysite/assets/css/user.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<div id="container">
-		<div id="header">
-			<h1>MySite</h1>
-			<ul>
-				<li><a href="">로그인</a><li>
-				<li><a href="">회원가입</a><li>
-				<li><a href="">회원정보수정</a><li>
-				<li><a href="">로그아웃</a><li>
-				<li>님 안녕하세요 ^^;</li>
-			</ul>
-		</div>
+	<div id="container"> <!--  div는 페이지를 논리적으로 나누는 태그!!! -->
+		<jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>	
 		<div id="content">
 			<div id="user">
-
-				<form id="join-form" name="joinForm" method="" action="">
+				<!--  뭔가 Vo가 필요할 것만 같은 곳이야.... -->
+				<form id="join-form" name="joinForm" method="POST" action="/mysite/user?a=join">
+				<input type='hidden' name="a" value="join">
 					<label class="block-label" for="name">이름</label>
 					<input id="name" name="name" type="text" value="">
 
@@ -34,8 +26,8 @@
 					
 					<fieldset>
 						<legend>성별</legend>
-						<label>여</label> <input type="radio" name="gender" value="female" checked="checked">
-						<label>남</label> <input type="radio" name="gender" value="male">
+						<label>여</label> <input type="radio" name="gender" value="f" checked="checked">
+						<label>남</label> <input type="radio" name="gender" value="m">
 					</fieldset>
 					
 					<fieldset>
@@ -43,22 +35,13 @@
 						<input id="agree-prov" type="checkbox" name="agreeProv" value="y">
 						<label>서비스 약관에 동의합니다.</label>
 					</fieldset>
-					
-					<input type="submit" value="가입하기">
-					
+										
+					<input type="submit" value="가입하기">					
 				</form>
 			</div>
 		</div>
-		<div id="navigation">
-			<ul>
-				<li><a href="">안대혁</a></li>
-				<li><a href="">방명록</a></li>
-				<li><a href="">게시판</a></li>
-			</ul>
-		</div>
-		<div id="footer">
-			<p>(c)opyright 2015</p>
-		</div>
+		<jsp:include page="/WEB-INF/views/include/navigation.jsp"></jsp:include>
+		<jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>	
 	</div>
 </body>
 </html>

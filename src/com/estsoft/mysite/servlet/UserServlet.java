@@ -26,7 +26,6 @@ public class UserServlet extends HttpServlet {
 		String actionName = request.getParameter( "a" );
 		ActionFactory actionFactory = new UserActionFactory();
 		Action action = actionFactory.getAction( actionName );
-		
 		action.execute(request, response);
 	}
 	

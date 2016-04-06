@@ -1,5 +1,14 @@
+<%@page import="com.estsoft.mysite.vo.UserVo"%>
+<%@page import="com.estsoft.mysite.vo.BoardVo"%>
+<%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
+<%
+		UserVo authUser = (UserVo) session.getAttribute("authUser");
+		List<BoardVo> list = (List<BoardVo>)request.getAttribute("boardList");
+		int length = list.size();
+		int index = 0;
+%>
 <html>
 <head>
 <title>mysite</title>
@@ -10,14 +19,12 @@
 	<div id="container">
 		<jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
 		<div id="content">
-			<div id="board">
-			
-				<!--  아직 다 비어있다!! -->
-				<form id="search_form" action="" method="post">
+			<div id="board">	
+				
+				<form id="search_form" action="/mysite/board" method="post">
 					<input type="text" id="kwd" name="kwd" value="">
 					<input type="submit" value="찾기">
-				</form>
-				<!--  아직 다 비어있다!! -->
+				</form>	
 				
 				<table class="tbl-ex">
 					<tr>
@@ -28,70 +35,57 @@
 						<th>작성일</th>
 						<th>&nbsp;</th>
 					</tr>				
-					<tr>
-						<td>3</td>
-						
-						<!--  아직 비어있다 -->
-						<td><a href="">세 번째 글입니다.</a></td>
-						<!--  아직 비어있다 -->
-						
-						<td>서나윤</td>
-						<td>3</td>
-						<td>2016-03-30 12:04:20</td>
-						
-						<!--  아직 비어있다 -->
-						<td><a href="" class="del">삭제</a></td>
-						<!--  아직 비어있다 -->
-						
-					</tr>
-					<tr>
-						<td>2</td>
-						
-						<!--  아직 비어있다 -->
-						<td><a href="">두 번째 글입니다.</a></td>
-						<!--  아직 비어있다 -->
-						
-						<td>서나윤</td>
-						<td>3</td>
-						<td>2016-03-30 12:04:12</td>
-						
-						<!--  아직 비어있다 -->
-						<td><a href="" class="del">삭제</a></td>
-						<!--  아직 비어있다 -->
-						
-					</tr>
-					<tr>
-						<td>1</td>
-						
-						<!--  아직 비어있다 -->
-						<td><a href="">첫 번째 글입니다.</a></td>
-						<!--  아직 비어있다 -->
-						
-						<td>서나윤</td>
-						<td>3</td>
-						<td>2015-09-25 07:24:32</td>
-						
-						<!--  아직 비어있다 -->
-						<td><a href="" class="del">삭제</a></td>
-						<!--  아직 비어있다 -->
-						
-					</tr>
+					<%
+						for (BoardVo vo : list) {
+					%>
+							<tr>
+							<td>[<%=length - index%>]</td>
+							<td style="text-align:left; padding-left:${vo.depth*20}px"><a href="/mysite/board?a=view&no=<%=vo.getNo()%>">
+							<%
+								if ( vo.getDepth() > 0 ) {
+									for (int i=0; i<vo.getDepth(); i++) { 
+							%>
+										<img src="/mysite/assets/images/replyVector.png">
+							<%
+								 	}
+								} 
+							%>
+							  
+							<%=vo.getTitle() %></a></td>
+							<!--  이름은 JOIN으로 넣어줘야 하나?! ㅜㅠㅜㅠ 그러고보니까 여기는 어떻게 하지-->
+							<td><%=vo.getUserNo()%></td>
+							<td><%=vo.getViews()%></td>
+							<td><%=vo.getRegDate() %></td>
+							<%
+								if ( authUser != null && authUser.getNo() == vo.getUserNo()) {
+							%>
+								<td><a href="/mysite/board?a=delete&no=<%=vo.getNo() %>&userNo=<%=vo.getUserNo()%>" class="del">삭제</a></td>
+							<%
+								} else {
+							%>
+								<td><img src="/mysite/assets/images/recycle_non.png"></td>
+							<%
+								}
+								index++;
+							}
+					%>
+						</tr>
 				</table>
-				
-				<!--  아직 비어있다 -->
+				<%
+					if ( authUser != null ) { 
+				%>
 				<div class="bottom">
-					<a href="" id="new-book">글쓰기</a>
+<!-- 				와 개바보였네 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ	
+					</a href="/WEB-INF/views/board?a=insert" id="new-book">글쓰기<//a> -->
+					<a href="/mysite/board?a=insert" id="new-book">글쓰기</a>
 				</div>
-				<!--  아직 비어있다 -->
-				
+				<%
+					}
+				%>				
 			</div>
-		</div>
-		
+		</div>		
 		<jsp:include page="/WEB-INF/views/include/navigation.jsp"></jsp:include>
-		<!--  다른 곳의 navigation 부분도 알아서 해보자.  -->
-		
-		<jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
-		
+		<jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>		
 	</div>
 </body>
 </html>

@@ -1,6 +1,9 @@
 <%@page import="com.estsoft.mysite.vo.UserVo"%>
 <%@page import="com.estsoft.mysite.vo.BoardVo"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
 <%@page import="java.util.List"%>
+<%@page import="java.lang.Object"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%
@@ -8,6 +11,7 @@
 		List<BoardVo> list = (List<BoardVo>)request.getAttribute("boardList");
 		int length = list.size();
 		int index = 0;
+		Map<String, Object> map = (Map<String, Object>)request.getAttribute("map");
 %>
 <html>
 <head>
@@ -71,6 +75,14 @@
 					%>
 						</tr>
 				</table>
+				
+				<div class="pageExpression">
+					<ul>
+						<li><a href="">◀</a></li>
+						<li><a href="">1</a></li>
+						<li><a href="">▶</a></li>		
+					</ul>
+				</div>
 				<%
 					if ( authUser != null ) { 
 				%>

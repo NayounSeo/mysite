@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,31 +13,31 @@ import com.estsoft.mysite.vo.BoardVo;
 
 public class BoardDao {
 	private DBConnection dbConnection;
-	
-	public BoardDao( DBConnection dbConnection ) {
+
+	public BoardDao(DBConnection dbConnection) {
 		this.dbConnection = dbConnection;
 	}
-	
+
 	public void insert(BoardVo vo) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try {
 			conn = dbConnection.getConnection();
-			//이렇게 하면 max 관련한 다른 메소드나 static 변수는 필요 없다.		
+			// 이렇게 하면 max 관련한 다른 메소드나 static 변수는 필요 없다.
 			String sql = "INSERT INTO board  VALUES (null, ?, ?, ?, now( ), 0, (SELECT ifnull(max(group_no), 0) + 1 FROM board as b), 1, 0)";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, vo.getUserNo( ));
-			pstmt.setString(2, vo.getTitle( ));
-			pstmt.setString(3, vo.getContent( ));		
+			pstmt.setLong(1, vo.getUserNo());
+			pstmt.setString(2, vo.getTitle());
+			pstmt.setString(3, vo.getContent());
 
-			pstmt.executeUpdate( );		
-			
+			pstmt.executeUpdate();
+
 		} catch (SQLException ex) {
-			System.out.println("error : "+ex);
+			System.out.println("error : " + ex);
 		} finally {
 			try {
-				if(pstmt != null) {
+				if (pstmt != null) {
 					pstmt.close();
 				}
 				if (conn != null) {
@@ -45,7 +46,7 @@ public class BoardDao {
 			} catch (SQLException ex) {
 				System.out.println("error : " + ex);
 			}
-		}		
+		}
 	}
 
 	public void delete(BoardVo vo) {
@@ -53,102 +54,17 @@ public class BoardDao {
 		PreparedStatement pstmt = null;
 		try {
 			conn = dbConnection.getConnection();
-			//호경오빠는 어차피 딜리트 버튼이 보이면 당사자일테니까 userNo 안받았다는 듯...!
-			//언제쯤 이런 것까지 능숙하게 생각할 수 있게 될까 뭐 안 가진 것들이 탐나는 것도 나름 좋은 일 상승심
-			String sql  = "DELETE FROM board WHERE user_no=? AND board_no=?";
+			// 호경오빠는 어차피 딜리트 버튼이 보이면 당사자일테니까 userNo 안받았다는 듯...!
+			// 언제쯤 이런 것까지 능숙하게 생각할 수 있게 될까 뭐 안 가진 것들이 탐나는 것도 나름 좋은 일 상승심
+			String sql = "DELETE FROM board WHERE user_no=? AND board_no=?";
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setLong(1, vo.getUserNo());
 			pstmt.setLong(2, vo.getNo());
-			
+
 			pstmt.executeUpdate();
 		} catch (SQLException ex) {
-			System.out.println("error : "+ex);
-		} finally {
-			try {
-				if( pstmt != null) {
-					pstmt.close();
-				}
-				if ( conn != null) {
-					conn.close();
-				}				
-			} catch (SQLException ex) {
-				System.out.println("error : " + ex);
-			}
-		}	
-	}
-
-	/*public List<BoardVo> getList() {
-		List<BoardVo> list = new ArrayList<BoardVo>( );
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			conn = dbConnection.getConnection();
-			stmt = conn.createStatement();
-			
-			String sql = "SELECT board_no, user_no, title, reg_date, views, group_no, order_no, depth FROM board ORDER BY group_no DESC, order_no ASC";
-			rs = stmt.executeQuery(sql);
-			
-			while(rs.next( )) {
-				Long no = rs.getLong(1);
-				Long userNo = rs.getLong(2);
-				String title = rs.getString(3);
-				String regDate = rs.getString(4);
-				int views = rs.getInt(5);
-				int groupNo = rs.getInt(6);
-				int orderNo = rs.getInt(7);
-				int depth = rs.getInt(8);
-				
-				BoardVo vo = new BoardVo();
-				vo.setNo(no);
-				vo.setUserNo(userNo);
-				vo.setTitle(title);
-				vo.setRegDate(regDate);
-				vo.setViews(views);
-				vo.setGroupNo(groupNo);
-				vo.setOrderNo(orderNo);
-				vo.setDepth(depth);
-				
-				list.add(vo);
-			}
-			return list;
-			
-		} catch (SQLException ex) {
-				System.out.println("error : "+ex);
-				return null;
-		} finally {
-				try {
-					if ( rs != null ) {
-						rs.close();
-					}
-					if ( stmt != null ) {
-						stmt.close();
-					}
-					if ( conn != null ) {
-						conn.close();
-					}
-				} catch (SQLException ex) {
-					System.out.println("error : " + ex);
-				}
-			}
-	}
-*/
-	
-	public void update(BoardVo vo) {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = dbConnection.getConnection( );
-			String sql = "UPDATE board SET title=?, content=? WHERE board_no =?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, vo.getTitle());
-			pstmt.setString(2, vo.getContent());
-			pstmt.setLong(3, vo.getNo());
-			
-			pstmt.executeUpdate( );
-		} catch (SQLException ex) {
-			System.out.println("error : " + ex );
+			System.out.println("error : " + ex);
 		} finally {
 			try {
 				if (pstmt != null) {
@@ -157,81 +73,109 @@ public class BoardDao {
 				if (conn != null) {
 					conn.close();
 				}
-			} catch  (SQLException ex) {
-				System.out.println("error : "+ex);
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
 			}
 		}
 	}
-	
+
+	public void update(BoardVo vo) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = dbConnection.getConnection();
+			String sql = "UPDATE board SET title=?, content=? WHERE board_no =?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, vo.getTitle());
+			pstmt.setString(2, vo.getContent());
+			pstmt.setLong(3, vo.getNo());
+
+			pstmt.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println("error : " + ex);
+		} finally {
+			try {
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
+			}
+		}
+	}
+
 	public BoardVo getBoard(Long no) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		try  {
+		try {
 			conn = dbConnection.getConnection();
 			String sql = "SELECT board_no, user_no, title, content, reg_date, views, group_no, order_no, depth FROM board WHERE board_no = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, no);
-			
+
 			rs = pstmt.executeQuery();
 			BoardVo vo = new BoardVo();
-			
-			while ( rs.next( )) {
+
+			while (rs.next()) {
 				Long userNo = rs.getLong(2);
 				String title = rs.getString(3);
 				String content = rs.getString(4);
 				String regDate = rs.getString(5);
 				int views = rs.getInt(6);
-				int groupNo=rs.getInt(7);
-				int orderNo=rs.getInt(8);
-				int depth=rs.getInt(9);
-				//복붙이 문제였다...퓨퓨
-//				System.out.println("여기는 Dao의 getBoard : depth는 "+depth);
+				int groupNo = rs.getInt(7);
+				int orderNo = rs.getInt(8);
+				int depth = rs.getInt(9);
+				// 복붙이 문제였다...퓨퓨
+				// System.out.println("여기는 Dao의 getBoard : depth는 "+depth);
 
 				vo.setNo(no);
 				vo.setUserNo(userNo);
 				vo.setTitle(title);
 				vo.setContent(content);
 				vo.setRegDate(regDate);
-				vo.setViews(views);		
+				vo.setViews(views);
 				vo.setGroupNo(groupNo);
 				vo.setOrderNo(orderNo);
 				vo.setDepth(depth);
 			}
-			return vo;		
-			
-			} catch (SQLException ex) {
-				System.out.println("error : "+ ex);
-				return null;
-			} finally {
-				try {
-					if (rs != null ) {
-						rs.close();
-					}
-					if ( pstmt != null ) {
-						pstmt.close();
-					}
-					if (conn != null) {
-						conn.close();
-					}
-				} catch (SQLException ex) {
-					System.out.println("error : "+ex);
+			return vo;
+
+		} catch (SQLException ex) {
+			System.out.println("error : " + ex);
+			return null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
 				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
 			}
+		}
 	}
 
 	public void plusView(Long no) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
-			conn = dbConnection.getConnection( );
+			conn = dbConnection.getConnection();
 			String sql = "UPDATE board SET views=views+1 WHERE board_no =?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, no);
-			
-			pstmt.executeUpdate( );
+
+			pstmt.executeUpdate();
 		} catch (SQLException ex) {
-			System.out.println("error : " + ex );
+			System.out.println("error : " + ex);
 		} finally {
 			try {
 				if (pstmt != null) {
@@ -240,29 +184,28 @@ public class BoardDao {
 				if (conn != null) {
 					conn.close();
 				}
-			} catch  (SQLException ex) {
-				System.out.println("error : "+ex);
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
 			}
 		}
 	}
 
-	public List<BoardVo> getSearchedList( String wannaSearch ) {
-		List<BoardVo> list = new ArrayList<BoardVo>( );
+	public List<BoardVo> getSearchedList(String wannaSearch) {
+		List<BoardVo> list = new ArrayList<BoardVo>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			conn = dbConnection.getConnection( );
+			conn = dbConnection.getConnection();
 			String sql = "SELECT board_no, user_no, title, reg_date, views, group_no, order_no, depth FROM board "
-					+ "WHERE title LIKE ? OR content LIKE ? "
-					+ "ORDER BY group_no DESC, order_no ASC";
+					+ "WHERE title LIKE ? OR content LIKE ? " + "ORDER BY group_no DESC, order_no ASC";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, "%"+wannaSearch+"%");
-			pstmt.setString(2, "%"+wannaSearch+"%");
-			
-			rs = pstmt.executeQuery( );
-			
-			while(rs.next( )) {
+			pstmt.setString(1, "%" + wannaSearch + "%");
+			pstmt.setString(2, "%" + wannaSearch + "%");
+
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
 				Long no = rs.getLong(1);
 				Long userNo = rs.getLong(2);
 				String title = rs.getString(3);
@@ -271,7 +214,7 @@ public class BoardDao {
 				int groupNo = rs.getInt(6);
 				int orderNo = rs.getInt(7);
 				int depth = rs.getInt(8);
-				
+
 				BoardVo vo = new BoardVo();
 				vo.setNo(no);
 				vo.setUserNo(userNo);
@@ -281,55 +224,20 @@ public class BoardDao {
 				vo.setGroupNo(groupNo);
 				vo.setOrderNo(orderNo);
 				vo.setDepth(depth);
-				
+
 				list.add(vo);
 			}
 			return list;
-			
-		} catch (SQLException ex) {
-				System.out.println("error : "+ex);
-				return null;
-		} finally {
-				try {
-					if ( rs != null ) {
-						rs.close();
-					}
-					if ( pstmt != null ) {
-						pstmt.close();
-					}
-					if ( conn != null ) {
-						conn.close();
-					}
-				} catch (SQLException ex) {
-					System.out.println("error : " + ex);
-				}
-		}
-	}
 
-	//계층형 게시판을 구현하다 겁이나서 메소드를 새로 파기로 한다. ㅎㅅㅎ
-	public void insert1(BoardVo vo) {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		
-		try {
-			conn = dbConnection.getConnection();
-			String sql = "INSERT INTO board  VALUES (null, ?, ?, ?, now( ), 0, ?, ?, ?)";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, vo.getUserNo( ));
-			pstmt.setString(2, vo.getTitle( ));
-			pstmt.setString(3, vo.getContent( ));		
-			pstmt.setInt(4,  vo.getGroupNo( ));
-			pstmt.setInt(5, vo.getOrderNo());
-			pstmt.setInt(6, vo.getDepth( ));
-			System.out.println("여기는 DAO : 현 게시물의 순서 번호는 "+vo.getOrderNo());
-
-			pstmt.executeUpdate( );		
-			
 		} catch (SQLException ex) {
-			System.out.println("error : "+ex);
+			System.out.println("error : " + ex);
+			return null;
 		} finally {
 			try {
-				if(pstmt != null) {
+				if (rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
 					pstmt.close();
 				}
 				if (conn != null) {
@@ -338,7 +246,42 @@ public class BoardDao {
 			} catch (SQLException ex) {
 				System.out.println("error : " + ex);
 			}
-		}		
+		}
+	}
+
+	// 계층형 게시판을 구현하다 겁이나서 메소드를 새로 파기로 한다. ㅎㅅㅎ
+	public void insert1(BoardVo vo) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+
+		try {
+			conn = dbConnection.getConnection();
+			String sql = "INSERT INTO board  VALUES (null, ?, ?, ?, now( ), 0, ?, ?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, vo.getUserNo());
+			pstmt.setString(2, vo.getTitle());
+			pstmt.setString(3, vo.getContent());
+			pstmt.setInt(4, vo.getGroupNo());
+			pstmt.setInt(5, vo.getOrderNo());
+			pstmt.setInt(6, vo.getDepth());
+			System.out.println("여기는 DAO : 현 게시물의 순서 번호는 " + vo.getOrderNo());
+
+			pstmt.executeUpdate();
+
+		} catch (SQLException ex) {
+			System.out.println("error : " + ex);
+		} finally {
+			try {
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
+			}
+		}
 	}
 
 	public void setNewOrder(BoardVo vo) {
@@ -348,48 +291,46 @@ public class BoardDao {
 			conn = dbConnection.getConnection();
 			String sql = "UPDATE board SET order_no = order_no+1 WHERE group_no = ? AND order_no >= ?";
 			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setInt(1, vo.getGroupNo( ));
-			pstmt.setInt(2, vo.getOrderNo( ));
-			
-			pstmt.executeUpdate( );
-			
+
+			pstmt.setInt(1, vo.getGroupNo());
+			pstmt.setInt(2, vo.getOrderNo());
+
+			pstmt.executeUpdate();
+
 		} catch (SQLException ex) {
-			System.out.println("error : " + ex );
+			System.out.println("error : " + ex);
 		} finally {
 			try {
 				if (pstmt != null) {
-					pstmt.close( );
+					pstmt.close();
 				}
 				if (conn != null) {
-					conn.close( );
+					conn.close();
 				}
-			} catch  (SQLException ex) {
-				System.out.println("error : "+ex);
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
 			}
 		}
 	}
-	
-	public List<BoardVo> getSearchedPagingList( String wannaSearch, int currentPage, int rowSize ) {
-		List<BoardVo> list = new ArrayList<BoardVo>( );
+
+	public List<BoardVo> getSearchedPagingList(String wannaSearch, int currentPage, int rowSize) {
+		List<BoardVo> list = new ArrayList<BoardVo>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			conn = dbConnection.getConnection( );
+			conn = dbConnection.getConnection();
 			String sql = "SELECT board_no, user_no, title, reg_date, views, group_no, order_no, depth FROM board "
-					+ "WHERE title LIKE ? OR content LIKE ? "
-					+ "ORDER BY group_no DESC, order_no ASC "
-					+ "LIMIT ?, ?";
+					+ "WHERE title LIKE ? OR content LIKE ? " + "ORDER BY group_no DESC, order_no ASC " + "LIMIT ?, ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, "%"+wannaSearch+"%");
-			pstmt.setString(2, "%"+wannaSearch+"%");
-			pstmt.setInt(3, (currentPage-1)*rowSize);
+			pstmt.setString(1, "%" + wannaSearch + "%");
+			pstmt.setString(2, "%" + wannaSearch + "%");
+			pstmt.setInt(3, (currentPage - 1) * rowSize);
 			pstmt.setInt(4, rowSize);
-			
-			rs = pstmt.executeQuery( );
-			
-			while(rs.next( )) {
+
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
 				Long no = rs.getLong(1);
 				Long userNo = rs.getLong(2);
 				String title = rs.getString(3);
@@ -398,7 +339,7 @@ public class BoardDao {
 				int groupNo = rs.getInt(6);
 				int orderNo = rs.getInt(7);
 				int depth = rs.getInt(8);
-				
+
 				BoardVo vo = new BoardVo();
 				vo.setNo(no);
 				vo.setUserNo(userNo);
@@ -408,22 +349,22 @@ public class BoardDao {
 				vo.setGroupNo(groupNo);
 				vo.setOrderNo(orderNo);
 				vo.setDepth(depth);
-				
+
 				list.add(vo);
 			}
-			return list;			
+			return list;
 		} catch (SQLException ex) {
-				System.out.println("error : "+ex);
-				return null;
+			System.out.println("error : " + ex);
+			return null;
 		} finally {
 			try {
-				if ( rs != null ) {
+				if (rs != null) {
 					rs.close();
 				}
-				if ( pstmt != null ) {
+				if (pstmt != null) {
 					pstmt.close();
 				}
-				if ( conn != null ) {
+				if (conn != null) {
 					conn.close();
 				}
 			} catch (SQLException ex) {
@@ -432,26 +373,27 @@ public class BoardDao {
 		}
 	}
 
-	
-	//나는 그냥 검색 조건에 걸린 애들을 세주는 메소드를 생각했는데 사용자 번호는 왜 필요한거지??
-	public Long getSearchedCount( String wannaSearch ) {
+	// 나는 그냥 검색 조건에 걸린 애들을 세주는 메소드를 생각했는데 사용자 번호는 왜 필요한거지??
+	// TH 연지ㅋㅋㅋㅋ 연지는.. 내 질문을 이해 못했지만.... 어쨌든 나중에는 user와 JOIN이 필요해지게 된다! 이름을
+	// 표시해주려면!
+	// 지금은 일단 없이~~
+	public Long getSearchedCount(String wannaSearch) {
 		long count = 0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		try {
-			conn = dbConnection.getConnection( );
-			String sql = "SELECT COUNT(*) FROM board "
-					+ "WHERE title LIKE ? OR content LIKE ? "
+			conn = dbConnection.getConnection();
+			String sql = "SELECT COUNT(*) FROM board " + "WHERE title LIKE ? OR content LIKE ? "
 					+ "ORDER BY group_no DESC, order_no ASC";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, "%"+wannaSearch+"%");
-			pstmt.setString(2, "%"+wannaSearch+"%");
-			
-			rs = pstmt.executeQuery( );
-			
-			while(rs.next( )) {
+			pstmt.setString(1, "%" + wannaSearch + "%");
+			pstmt.setString(2, "%" + wannaSearch + "%");
+
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
 				Long no = rs.getLong(1);
 				Long userNo = rs.getLong(2);
 				String title = rs.getString(3);
@@ -460,7 +402,7 @@ public class BoardDao {
 				int groupNo = rs.getInt(6);
 				int orderNo = rs.getInt(7);
 				int depth = rs.getInt(8);
-				
+
 				BoardVo vo = new BoardVo();
 				vo.setNo(no);
 				vo.setUserNo(userNo);
@@ -469,26 +411,83 @@ public class BoardDao {
 				vo.setViews(views);
 				vo.setGroupNo(groupNo);
 				vo.setOrderNo(orderNo);
-				vo.setDepth(depth);			
+				vo.setDepth(depth);
 			}
 			return count;
 		} catch (SQLException ex) {
-				System.out.println("error : "+ex);
-				return null;
+			System.out.println("error : " + ex);
+			return null;
 		} finally {
-				try {
-					if ( rs != null ) {
-						rs.close();
-					}
-					if ( pstmt != null ) {
-						pstmt.close();
-					}
-					if ( conn != null ) {
-						conn.close();
-					}
-				} catch (SQLException ex) {
-					System.out.println("error : " + ex);
+			try {
+				if (rs != null) {
+					rs.close();
 				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
+			}
 		}
 	}
+
+	public List<BoardVo> getList() {
+		List<BoardVo> list = new ArrayList<BoardVo>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = dbConnection.getConnection();
+			stmt = conn.createStatement();
+
+			String sql = "SELECT board_no, user_no, title, reg_date, views, group_no, order_no, depth FROM board ORDER BY group_no DESC, order_no ASC";
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				Long no = rs.getLong(1);
+				Long userNo = rs.getLong(2);
+				String title = rs.getString(3);
+				String regDate = rs.getString(4);
+				int views = rs.getInt(5);
+				int groupNo = rs.getInt(6);
+				int orderNo = rs.getInt(7);
+				int depth = rs.getInt(8);
+
+				BoardVo vo = new BoardVo();
+				vo.setNo(no);
+				vo.setUserNo(userNo);
+				vo.setTitle(title);
+				vo.setRegDate(regDate);
+				vo.setViews(views);
+				vo.setGroupNo(groupNo);
+				vo.setOrderNo(orderNo);
+				vo.setDepth(depth);
+
+				list.add(vo);
+			}
+			return list;
+
+		} catch (SQLException ex) {
+			System.out.println("error : " + ex);
+			return null;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stmt != null) {
+					stmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException ex) {
+				System.out.println("error : " + ex);
+			}
+		}
+	}
+
 }

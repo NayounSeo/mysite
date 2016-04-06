@@ -32,19 +32,12 @@ public class DefaultAction implements Action {
 		}
 		String wannaSearch = (String) request.getParameter("kwd");
 		BoardDao dao = new BoardDao( new MySQLWebDBConnection( ));
-		
-		// 
-		
-		
-		
-		
-		
-		
-		
+
 		List<BoardVo> list = null;
 		if ( wannaSearch == null ) {
 			wannaSearch = "";
 		}
+		Long totalBoards = dao.getSearchedCount(wannaSearch);
 		list = dao.getSearchedList(wannaSearch);		
 		request.setAttribute("boardList", list);
 		WebUtil.forward(request, response, "/WEB-INF/views/board/list.jsp");

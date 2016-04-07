@@ -20,17 +20,6 @@ public class WriteAction implements Action {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("Write Action execute");
 		
-		HttpSession session = request.getSession();
-		if( session == null ) {
-			WebUtil.redirect(request, response, request.getContextPath() + "/board");
-			return;
-		}
-		UserVo authUser = (UserVo)session.getAttribute( "authUser" );
-		if( authUser == null ) {
-			WebUtil.redirect(request, response, request.getContextPath() + "/board");
-			return;
-		}
-		
 		Long userNo = Long.parseLong(request.getParameter("userNo"));
 		String title = request.getParameter("title");
 		String content = request.getParameter("content");

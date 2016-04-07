@@ -5,13 +5,16 @@
 <%@page import="java.util.List"%>
 <%@page import="java.lang.Object"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 <!DOCTYPE html>
 <%
 		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		List<BoardVo> list = (List<BoardVo>)request.getAttribute("boardList");
 		int length = list.size();
 		int index = 0;
-		Map<String, Object> map = (Map<String, Object>)request.getAttribute("map");
 %>
 <html>
 <head>
@@ -24,9 +27,15 @@
 		<jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
 		<div id="content">
 			<div id="board">	
-				
 				<form id="search_form" action="/mysite/board" method="post">
-					<input type="text" id="kwd" name="kwd" value="">
+				<c:choose>
+					<c:when test='${map.wannaSearch == ""}'>
+						<input type="text" id="kwd" name="kwd" value="">
+					</c:when>
+					<c:otherwise>
+						<input type="text" id="kwd" name="kwd" value="">
+						</c:otherwise>
+					</c:choose>
 					<input type="submit" value="찾기">
 				</form>	
 				
@@ -39,6 +48,7 @@
 						<th>작성일</th>
 						<th>&nbsp;</th>
 					</tr>				
+					<!--  first Index는 어디 쓰는 걸까... -->
 					<%
 						for (BoardVo vo : list) {
 					%>
@@ -55,15 +65,15 @@
 								} 
 							%>
 							  
-							<%=vo.getTitle() %></a></td>
+							${vo.title }</a></td>
 							<!--  이름은 JOIN으로 넣어줘야 하나?! ㅜㅠㅜㅠ 그러고보니까 여기는 어떻게 하지-->
-							<td><%=vo.getUserNo()%></td>
+							<td><%=vo.getUserName()%></td>
 							<td><%=vo.getViews()%></td>
 							<td><%=vo.getRegDate() %></td>
 							<%
 								if ( authUser != null && authUser.getNo() == vo.getUserNo()) {
 							%>
-								<td><a href="/mysite/board?a=delete&no=<%=vo.getNo() %>&userNo=<%=vo.getUserNo()%>" class="del">삭제</a></td>
+								<td><a href="/mysite/board?a=delete&no=<%=vo.getNo()%>&userNo=<%=vo.getUserNo()%>" class="del">삭제</a></td>
 							<%
 								} else {
 							%>
@@ -76,11 +86,24 @@
 						</tr>
 				</table>
 				
-				<div class="pageExpression">
+				<div class="pager">
 					<ul>
-						<li><a href="">◀</a></li>
-						<li><a href="">1</a></li>
-						<li><a href="">▶</a></li>		
+					<c:if test="${map.prevPage > 0 }">
+						<li><a href="/mysite/board?page=${map.prevPage }&kwd=${map.wannaSearch }&">◀</a></li>
+					</c:if>
+					<c:forEach begin="${map.firstPage }" end="${map.lastPage }" var="page" step="1">
+							<c:choose>
+								<c:when test="${page == map.currentPage }">
+									<li class="selected">${page }</li>
+								</c:when>
+								<c:otherwise>
+								<li><a href="/mysite/board?page=${page }&kwd=${map.wannaSearch }">${page }</a></li>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
+					<c:if test="${map.nextPage > 0 }">
+						<li><a href="/mysite/board?page=${map.nextPage }&kwd=${map.wannaSearch }">▶</a></li>		
+					</c:if>
 					</ul>
 				</div>
 				<%

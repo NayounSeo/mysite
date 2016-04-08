@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@page import="com.estsoft.mysite.vo.UserVo"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%
 		UserVo userVo = (UserVo)request.getAttribute("userVo");
-		System.out.println(userVo);
 %>
 <html>
 <head>
@@ -18,12 +20,12 @@
 			<div id="user">
 				<form id="modify-form" name="modifyform" method="POST" action="/mysite/user">
 				<input type='hidden' name="a" value="modify">
-				<input type='hidden' name="no" value="<%=userVo.getNo() %>">
+				<input type='hidden' name="no" value="${authUser.no }">
 					<label class="block-label" for="name">이름</label>
-					<input id="name" name="name" type="text" value="<%=userVo.getName()%>">
+					<input id="name" name="name" type="text" value="${authUser.name }">
 					<br><br>
 					<label class="block-label" for="email">이메일</label>
-					<input id="email" name="email" type="text" value="<%=userVo.getEmail()%>">
+					<input id="email" name="email" type="text" value="${authUser.email }">
 					<input type="button" value="id 중복체크">
 					<br><br>
 					<label class="block-label">패스워드</label>
@@ -50,8 +52,8 @@
 				</form>
 			</div>
 		</div>
-		<jsp:include page="/WEB-INF/views/include/navigation.jsp"/>
-		<jsp:include page="/WEB-INF/views/include/footer.jsp"/>	
+		<c:import url="/WEB-INF/views/include/navigation.jsp"/>
+		<c:import url="/WEB-INF/views/include/footer.jsp"/>
 	</div>
 </body>
 </html>

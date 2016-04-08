@@ -382,8 +382,8 @@ public class BoardDao {
 		ResultSet rs = null;
 		try {
 			conn = dbConnection.getConnection();
-			String sql = "SELECT b.board_no, u.name, b.title, b.reg_date, b.views, b.group_no, b.order_no, b.depth FROM board b, user u "
-					+ "WHERE b.user_no = u.no AND title LIKE ? OR content LIKE ? " 
+			String sql = "SELECT b.board_no, u.name, b.title, b.reg_date, b.views, b.group_no, b.order_no, b.depth, b.user_no FROM board b, user u "
+					+ "WHERE b.user_no = u.no AND (title LIKE ? OR content LIKE ?) " 
 					+ "ORDER BY group_no DESC, order_no ASC " 
 					+ "LIMIT ?, ?";
 			pstmt = conn.prepareStatement(sql);
@@ -404,6 +404,7 @@ public class BoardDao {
 				int groupNo = rs.getInt(6);
 				int orderNo = rs.getInt(7);
 				int depth = rs.getInt(8);
+				Long userNo = rs.getLong(9);
 
 				BoardVo vo = new BoardVo();
 				vo.setNo(no);
@@ -414,6 +415,7 @@ public class BoardDao {
 				vo.setGroupNo(groupNo);
 				vo.setOrderNo(orderNo);
 				vo.setDepth(depth);
+				vo.setUserNo(userNo);
 
 				list.add(vo);
 			}

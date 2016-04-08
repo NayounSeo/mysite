@@ -1,11 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.estsoft.mysite.vo.UserVo" %>
 <%@ page import="com.estsoft.mysite.vo.BoardVo" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%
 	UserVo authUser = (UserVo)session.getAttribute("authUser");
 	BoardVo vo = (BoardVo)request.getAttribute("boardVo");
-	System.out.println("reply.jsp에서의 받아온 vo 정보 "+vo);
 %>
 <html>
 <head>
@@ -15,15 +17,15 @@
 </head>
 <body>
 	<div id="container">
-		<jsp:include page="/WEB-INF/views/include/header.jsp"/>
+		<c:import url="/WEB-INF/views/include/header.jsp"/>
 		<div id="content">
 			<div id="board">
 				<form class="board-form" method="post" action="/mysite/board">
 				<input type = "hidden" name = "a" value="reply">
-				<input type='hidden' name="userNo" value="<%=authUser.getNo()%>">
-				<input type='hidden' name="groupNo" value="<%=vo.getGroupNo()%>">		
-				<input type='hidden' name="orderNo" value="<%=vo.getOrderNo()%>">		
-				<input type='hidden' name="depth" value="<%=vo.getDepth()%>">					
+				<input type='hidden' name="userNo" value="${boardVo.userNo }">
+				<input type='hidden' name="groupNo" value="${boardVo.groupNo }">		
+				<input type='hidden' name="orderNo" value="${boardVo.orderNo }">		
+				<input type='hidden' name="depth" value="${boardVo.depth }">					
 					<table class="tbl-ex">
 						<tr>
 							<th colspan="2">답글 쓰기</th>
@@ -46,8 +48,8 @@
 				</form>				
 			</div>
 		</div>
-		<jsp:include page="/WEB-INF/views/include/navigation.jsp"></jsp:include>
-		<jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
+		<c:import url="/WEB-INF/views/include/navigation.jsp"/>
+		<c:import url="/WEB-INF/views/include/footer.jsp"/>
 	</div>
 </body>
 </html>

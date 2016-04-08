@@ -10,12 +10,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <!DOCTYPE html>
-<%
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
-		List<BoardVo> list = (List<BoardVo>)request.getAttribute("boardList");
-		int length = list.size();
-		int index = 0;
-%>
 <html>
 <head>
 <title>mysite</title>
@@ -24,7 +18,7 @@
 </head>
 <body>
 	<div id="container">
-		<jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
+		<c:import url="/WEB-INF/views/include/header.jsp"/>
 		<div id="content">
 			<div id="board">	
 				<form id="search_form" action="/mysite/board" method="post">
@@ -48,42 +42,29 @@
 						<th>작성일</th>
 						<th>&nbsp;</th>
 					</tr>				
-					<!--  first Index는 어디 쓰는 걸까... -->
-					<%
-						for (BoardVo vo : list) {
-					%>
-							<tr>
-							<td>[<%=length - index%>]</td>
-							<td style="text-align:left; padding-left:${vo.depth*20}px"><a href="/mysite/board?a=view&no=<%=vo.getNo()%>">
-							<%
-								if ( vo.getDepth() > 0 ) {
-									for (int i=0; i<vo.getDepth(); i++) { 
-							%>
-										<img src="/mysite/assets/images/replyVector.png">
-							<%
-								 	}
-								} 
-							%>
-							  
-							${vo.title }</a></td>
-							<!--  이름은 JOIN으로 넣어줘야 하나?! ㅜㅠㅜㅠ 그러고보니까 여기는 어떻게 하지-->
-							<td><%=vo.getUserName()%></td>
-							<td><%=vo.getViews()%></td>
-							<td><%=vo.getRegDate() %></td>
-							<%
-								if ( authUser != null && authUser.getNo() == vo.getUserNo()) {
-							%>
-								<td><a href="/mysite/board?a=delete&no=<%=vo.getNo()%>&userNo=<%=vo.getUserNo()%>" class="del">삭제</a></td>
-							<%
-								} else {
-							%>
-								<td><img src="/mysite/assets/images/recycle_non.png"></td>
-							<%
-								}
-								index++;
-							}
-					%>
+					<c:set var="firstIndex"	value="${map.totalBoards - (map.currentPage - 1)*map.rowSize }" />
+					<c:forEach items="${map.list }" var="vo" varStatus="status">
+						<tr>
+							<td>[${firstIndex - status.index + 1 }]</td>
+							<td style="text-align:left; padding-left:${vo.depth*20}px">
+								<c:if test="${vo.depth >0}">
+									<img src="/mysite/assets/images/replyVector.png">
+								</c:if>
+								<a href="/mysite/board?a=view&no=${vo.no }">${vo.title }</a>
+							</td>
+							<td>${vo.userName }</td>
+							<td>${vo.views }</td>
+							<td>${vo.regDate }</td>
+							<c:choose>
+								<c:when test="${ not empty authUser && authUser.no == vo.userNo}">
+									<td><a href="/mysite/board?a=delete&no=${vo.no }&userNo= ${vo.userNo }" class="del">삭제</a></td>
+								</c:when>
+								<c:otherwise>
+									<td><img src="/mysite/assets/images/recycle_non.png"></td>
+								</c:otherwise>
+							</c:choose>
 						</tr>
+					</c:forEach>
 				</table>
 				
 				<div class="pager">
@@ -106,21 +87,19 @@
 					</c:if>
 					</ul>
 				</div>
-				<%
-					if ( authUser != null ) { 
-				%>
-				<div class="bottom">
-<!-- 				와 개바보였네 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ	
-					</a href="/WEB-INF/views/board?a=insert" id="new-book">글쓰기<//a> -->
-					<a href="/mysite/board?a=insert" id="new-book">글쓰기</a>
-				</div>
-				<%
-					}
-				%>				
+				<c:choose>
+					<c:when test="${ not empty authUser }">
+					<div class="bottom">
+	<!-- 				와 개바보였네 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ	
+						</a href="/WEB-INF/views/board?a=insert" id="new-book">글쓰기<//a> -->
+						<a href="/mysite/board?a=insert" id="new-book">글쓰기</a>
+					</div>
+					</c:when>	
+					</c:choose>			
 			</div>
 		</div>		
-		<jsp:include page="/WEB-INF/views/include/navigation.jsp"></jsp:include>
-		<jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>		
+		<c:import url="/WEB-INF/views/include/navigation.jsp"/>
+		<c:import url="/WEB-INF/views/include/footer.jsp"/>	
 	</div>
 </body>
 </html>

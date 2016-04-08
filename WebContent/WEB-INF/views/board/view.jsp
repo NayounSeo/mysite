@@ -3,9 +3,11 @@
 <%@ page import="com.estsoft.mysite.vo.BoardVo" %>
 <%@ page import="com.estsoft.mysite.vo.UserVo" %>
 <%@ page import="com.estsoft.mysite.dao.BoardDao" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
 	BoardVo vo = (BoardVo)request.getAttribute("boardVo");
-	UserVo authUser = (UserVo)session.getAttribute("authUser");
 	BoardDao dao = new BoardDao( new MySQLWebDBConnection( ));
 	dao.plusView(vo.getNo( ));
 %>
@@ -18,13 +20,13 @@
 </head>
 <body>
 	<div id="container">
-		<jsp:include page="/WEB-INF/views/include/header.jsp"/>
+		<c:import url="/WEB-INF/views/include/header.jsp"/>
 		<div id="content">
 			<div id="board" class="board-form">
-			<input type="hidden" name="no" value="<%=vo.getNo()%>">
+			<input type="hidden" name="no" value="${boardVo.no }">
 				<table class="tbl-ex">
 					<tr>
-						<th colspan="2">[<%=vo.getNo() %>]</th>
+						<th colspan="2">[${boardVo.no }]</th>
 					</tr>
 					<tr>
 						<td class="label">제목</td>
@@ -39,27 +41,22 @@
 						</td>
 					</tr>
 				</table>
-				
+
 				<div class="bottom">
 					<a href="/mysite/board">글목록</a>
-					<%
-						if ( authUser != null && authUser.getNo() == vo.getUserNo()) {
-					%>
-							<a href="/mysite/board?a=modifyform&no=<%=vo.getNo()%>">글수정</a>
-					<%
-						}
-						if (authUser != null) {
-					%>
-					<a href="/mysite/board?a=replyform&no=<%=vo.getNo()%>">답글</a>
-					<%
-						}
-					%>
-				</div>
-				
+					<c:choose>
+						<c:when test="${ not empty authUser && authUser.no == vo.userNo}">
+							<a href="/mysite/board?a=modifyform&no=${boardVo.no }">글수정</a>
+						</c:when>
+						<c:when test="${ not empty authUser }">
+							<a href="/mysite/board?a=replyform&no=<%=vo.getNo()%>">답글</a>
+						</c:when>
+					</c:choose>
+				</div>				
 			</div>
 		</div>		
-		<jsp:include page="/WEB-INF/views/include/navigation.jsp"/>
-		<jsp:include page="/WEB-INF/views/include/footer.jsp"/>	
+		<c:import url="/WEB-INF/views/include/navigation.jsp"/>
+		<c:import url="/WEB-INF/views/include/footer.jsp"/>	
 	</div>
 </body>
 </html>

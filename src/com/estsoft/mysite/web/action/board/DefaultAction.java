@@ -27,12 +27,12 @@ public class DefaultAction implements Action {
 		String wannaSearch = (String) request.getParameter("kwd");
 		BoardDao dao = new BoardDao( new MySQLWebDBConnection( ));
 
+		String page = request.getParameter("page");
 		List<BoardVo> list = null;
 		if ( wannaSearch == null ) {
 			wannaSearch = "";
 		}
-		String page = request.getParameter("page");
-		System.out.println("page : "+page);
+		
 		int totalBoards = dao.getSearchedCount(wannaSearch);
 		int currentPage = 1;
 		if( page != null && WebUtil.isNumeric( page ) ) {
@@ -58,13 +58,8 @@ public class DefaultAction implements Action {
 		if ( lastPage < totalPage ) {
 			nextPage = lastPage + 1;
 		}
-		
-		System.out.println("totalBoards :"+totalBoards+" currentPage : "+
-										currentPage+" totalPage : "+totalPage+"\nfirstPage : "+firstPage+
-										" lastPage : "+lastPage+"\nprevPage : "+prevPage+
-										"nextPage"+nextPage);
 		list = dao.getSearchedPagingList(wannaSearch, currentPage, row_Size);
-		request.setAttribute("boardList", list);
+
 		Map<String, Object> map = new HashMap<String, Object>( );
 		map.put("rowSize", row_Size);
 		map.put("pageSize", page_Size);
@@ -76,6 +71,7 @@ public class DefaultAction implements Action {
 		map.put("prevPage", prevPage);
 		map.put("nextPage", nextPage);
 		map.put("list", list);
+		
 		request.setAttribute("map", map);
 		WebUtil.forward(request, response, "/WEB-INF/views/board/list.jsp");
 

@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <!doctype html>
 <html>
 <head>
@@ -8,7 +11,7 @@
 </head>
 <body>
 	<div id="container"> <!--  div는 페이지를 논리적으로 나누는 태그!!! -->
-		<jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>	
+		<c:import url="/WEB-INF/views/include/header.jsp"/>	
 		<div id="content">
 			<div id="user">
 				<!--  뭔가 Vo가 필요할 것만 같은 곳이야.... -->
@@ -40,8 +43,8 @@
 				</form>
 			</div>
 		</div>
-		<jsp:include page="/WEB-INF/views/include/navigation.jsp"></jsp:include>
-		<jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>	
+		<c:import url="/WEB-INF/views/include/navigation.jsp"/>
+		<c:import url="/WEB-INF/views/include/footer.jsp"/>
 	</div>
 </body>
 </html>

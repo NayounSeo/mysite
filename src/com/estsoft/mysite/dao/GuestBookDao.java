@@ -11,6 +11,7 @@ import java.util.List;
 import com.estsoft.db.DBConnection;
 import com.estsoft.db.MySQLWebDBConnection;
 import com.estsoft.mysite.vo.GuestBookVo;
+import com.estsoft.mysite.vo.UserVo;
 
 public class GuestBookDao {
 	private DBConnection dbConnection;
@@ -38,9 +39,12 @@ public class GuestBookDao {
 	      }
 	   }
 
-	public void insert(GuestBookVo vo) {  //vo 인풋을 받는다
+	public Long insert(GuestBookVo vo) {  //vo 인풋을 받는다
+		Long no = 0L;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		Statement stmt = null;
+		ResultSet rs = null;
 
 		try {
 			conn = dbConnection.getConnection();
@@ -53,9 +57,16 @@ public class GuestBookDao {
 			pstmt.setString(2, vo.getMessage( ) );
 			pstmt.setString(3, vo.getPasswd( ) );
 			pstmt.executeUpdate();
-
+			
+			stmt = conn.createStatement( );
+			rs = stmt.executeQuery("SELECT LAST_INSERT_ID( )");
+			if (rs.next( ) ) {
+				no = rs.getLong(1);
+			}
+			return no;	
 		} catch (SQLException ex) {
 			ex.printStackTrace();
+			return 0L;
 		} finally {
 			try {
 				if (pstmt != null) {
@@ -64,14 +75,63 @@ public class GuestBookDao {
 				if (conn != null) {
 					conn.close();
 				}
-
+				if(stmt != null) {
+					stmt.close();
+				}
+				if( rs != null) {
+					rs.close();
+				}
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 		}
 	}
 
-	public List<GuestBookVo> getList() { // DB에서 가져오는 메소드야!!
+	public GuestBookVo get( Long no ) {
+		GuestBookVo vo = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = dbConnection.getConnection();
+			String sql = "SELECT name, passwd, message, reg_date FROM guestbook WHERE no=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, no );
+			
+			rs = pstmt.executeQuery();
+			if( rs.next( ) ) {
+				String name = rs.getString(1);
+				String password = rs.getString(2);
+				String message= rs.getString(3);
+				String regDate = rs.getString(4);
+				
+				vo = new GuestBookVo( );
+				vo.setName(name);
+				vo.setPasswd(password);
+				vo.setMessage(message);
+				vo.setRegDate(regDate);
+			}
+			return vo;
+		} catch (SQLException e) {
+			System.out.println("error : "+e);
+			return null;
+		} finally {
+			try {
+				if( rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch ( SQLException e ) {
+				e.printStackTrace();
+			}
+		}
+	}	
+	public List<GuestBookVo> getList( ) { // DB에서 가져오는 메소드야!!
 		List<GuestBookVo> list = new ArrayList<GuestBookVo>();
 		Connection conn = null;
 		Statement stmt = null;
@@ -81,6 +141,54 @@ public class GuestBookDao {
 			stmt = conn.createStatement();
 
 			String sql = "SELECT no, name, reg_date, message FROM guestbook ORDER BY reg_date DESC";
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				Long no = rs.getLong(1);
+				String name = rs.getString(2);
+				String regDate = rs.getString(3);
+				String message = rs.getString(4);
+
+				GuestBookVo vo = new GuestBookVo();
+				vo.setNo(no);
+				vo.setName(name);
+				vo.setRegDate(regDate);
+				vo.setMessage(message);
+				list.add(vo);
+			}
+
+		} catch (SQLException ex) {
+			System.out.println("error : " + ex);
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stmt != null) {
+					stmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				} 
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return list;
+	}
+	
+	public List<GuestBookVo> getList( int page ) { // DB에서 가져오는 메소드야!!
+		List<GuestBookVo> list = new ArrayList<GuestBookVo>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = dbConnection.getConnection();
+			stmt = conn.createStatement();
+
+			String sql = "SELECT no, name, reg_date, message "
+					+ "FROM guestbook ORDER BY reg_date DESC "
+					+ "LIMIT "+ (page-1)*5 +", 5";
 			rs = stmt.executeQuery(sql);
 
 			while (rs.next()) {

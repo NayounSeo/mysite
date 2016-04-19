@@ -30,6 +30,10 @@ public class UserActionFactory extends ActionFactory {
 			action = new DeleteFormAction();
 		} else if ("delete".equals(actionName)) {
 			action = new DeleteAction();
+			
+		//New Ajax Request
+		} else if ("checkemail".equals(actionName)) {
+			action = new CheckEmailAction();
 		} else {
 			action = new DefaultAction();
 		}

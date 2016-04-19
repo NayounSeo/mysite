@@ -12,7 +12,7 @@ import com.estsoft.mysite.dao.UserDao;
 import com.estsoft.mysite.vo.UserVo;
 import com.estsoft.web.WebUtil;
 import com.estsoft.web.action.Action;
-import com.mysql.jdbc.authentication.MysqlClearPasswordPlugin;
+
 
 public class LoginAction implements Action {
 
